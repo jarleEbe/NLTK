@@ -21,7 +21,7 @@ while (my $txt = readdir(DS))
 		my $outputfile = $txt;
 		$outputfile =~ s/\.txt/_tokenized\.txt/;
 		open(OUT, ">$resultPath$outputfile");
-#		binmode OUT, ":utf8";
+		binmode OUT, ":utf8";
 		print "Tokenizing $txt\n";
 		my $lineindex = 0;
         my $thewholetext = '';
@@ -66,11 +66,12 @@ while (my $txt = readdir(DS))
 
 			$line =~ s/--/–/g;
 			$line =~ s/−/–/g;
-
+			$line =~ s/–/–/g;
 			$line =~ s/&mdash;/–/g;
 			$line =~ s/&dash;/–/g;
 			$line =~ s/—/–/g;
 			$line =~ s/–/ – /g;
+#			$line =~ s/ – / __ /g;
 
 			$line =~ s/“/"/g;
 			$line =~ s/”/"/g;
@@ -211,13 +212,20 @@ sub sInsert
 {
     my $thetext = shift(@_);
 
+	$thetext =~ s/ \s+/ /g;
+
 	$thetext =~ s/(\.|\?|\!) ([[:upper:]]{1})/$1 <\/s> <s> $2/g;
+	$thetext =~ s/ § (\p{Alnum})/ <\/s> <s> § $1/g;
 
 	$thetext =~ s/(\.|\?|\!\–) " ([[:upper:]]{1})/$1 " <\/s> <s> $2/g;
+	$thetext =~ s/(\.) \] ([[:upper:]]{1})/$1 \] <\/s> <s> $2/g;
+	$thetext =~ s/ : ([[:upper:]]{1})/ : <\/s> <s> $1/g;
+	$thetext =~ s/ : " ([[:upper:]]{1})/ : <\/s> <s> " $1/g;
 
 	$thetext =~ s/(\.|\?|\!) \) ([[:upper:]]{1})/$1 \) <\/s> <s> $2/g;
 	$thetext =~ s/(\.|\?|\!) \( ([[:upper:]]{1})/$1 <\/s> <s> \( $2/g;
 
+	$thetext =~ s/(\.|\?|\!) " \( " ([[:upper:]]{1})/$1 " <\/s> <s> \( " $2/g;
 	$thetext =~ s/(\.|\?|\!) " \( ([[:upper:]]{1})/$1 " <\/s> <s> \( $2/g;
 	$thetext =~ s/(\.|\?|\!) " \) ([[:upper:]]{1})/$1 " \) <\/s> <s> $2/g;
 	$thetext =~ s/(\.|\?|\!) \) " ([[:upper:]]{1})/$1 \) <\/s> <s> " $2/g;
@@ -230,8 +238,8 @@ sub sInsert
 
 	$thetext =~ s/(\.|\?|\!) " " ([0-9]{1})/$1 " <\/s> <s> " $2/g;
 
+#	$thetext =~ s/([0-9]{1}) \. \. \. ([[:lower:]]{1})/$1 <\/s> <s> \. \. \. $2/g;
 	$thetext =~ s/([0-9]{1}) \. ([[:upper:]]{1})/$1 \. <\/s> <s> $2/g;
-
 	$thetext =~ s/([0-9]{1}) \. " ([[:upper:]]{1})/$1 \. <\/s> <s> " $2/g;
 
 #Abbreviations - remove <s> </s>
@@ -249,13 +257,23 @@ sub sInsert
    $thetext =~ s/prof \. <\/s> <s>/prof\. /g;
    $thetext =~ s/W \. C \. <\/s> <s>/W\.C\. /g;
    $thetext =~ s/cf \. <\/s> <s>/cf\. /g;
+
+   $thetext =~ s/P \. <\/s> <s> M \. /P\.M\. /g;
    $thetext =~ s/P \. M \. <\/s> <s>/P\.M\. /g;
    $thetext =~ s/p \. m \. <\/s> <s>/p\.m\. /g;
+   $thetext =~ s/A \. <\/s> <s> M \. /A\.M\. /g;   
    $thetext =~ s/A \. M \. <\/s> <s>/A\.M\. /g;
-   $thetext =~ s/a \. m \. <\/s> <s>/a\.m\. /g; 
+   $thetext =~ s/a \. m \. <\/s> <s>/a\.m\. /g;
+
+   $thetext =~ s/P \. <\/s> <s> T \. <\/s> <s>/P\.T\. /g;
+   $thetext =~ s/P \. <\/s> <s> S \. <\/s> <s>/P\.S\. /g;
+   $thetext =~ s/U \. <\/s> <s> S \. <\/s> <s>/U\.S\. /g;
+
    $thetext =~ s/P \. T \. <\/s> <s>/P\.T\. /g;
    $thetext =~ s/P \. S \. <\/s> <s>/P\.S\. /g;
    $thetext =~ s/U \. S \. <\/s> <s>/U\.S\. /g;
+
+   $thetext =~ s/B \. <\/s> <s> B \. <\/s> <s> C \. /B\.B\.C\. /g;
    $thetext =~ s/B \. B \. C \. <\/s> <s>/B\.B\.C\. /g;
 
    $thetext =~ s/Mr \. /Mr\. /g; 
@@ -312,7 +330,7 @@ sub sInsert
 
 	if ($thetext !~ /^<s>/)
 	{
-		$thetext = '<s>' . $thetext;
+		$thetext = '<s> ' . $thetext;
 	}
 
     if ($thetext !~ /<\/s>$/)
@@ -327,6 +345,7 @@ sub sInsert
 		$thetext =~ s/(\.|\?|\!|\p{Alnum}|") <s>/$1 <\/s> <s> /g;
 	}
 
+	$thetext =~ s/ <\/s> <\/s> / <\/s> /g;
 	$thetext =~ s/<\/s><\/s>$/<\/s>/;
 	$thetext =~ s/<\/s> <\/s>$/<\/s>/;
 
@@ -335,10 +354,81 @@ sub sInsert
 		print "Found missing </s>.\n"
 	}
 
-	if ($thetext =~ /(\p{Alnum}| )<\/s> <s> (\p{Alnum}|"})/)
+#	if ($thetext =~ /(\p{Alnum}| )<\/s> <s> (\p{Alnum}|"})/)
+#	{
+#		print "Possible wrongly inserted </s> <s>.\n"
+#	}
+
+	if ($thetext =~ /<s>  \d+ <\/s> \. \. \. /)
 	{
-		print "Possible wrongly inserted </s> <s>.\n"
+		print "Possible wrongly inserted <s> NUMB </s> . . .\n";
+		$thetext =~ s/<s>  (\d+) <\/s> \. \. \. /<s> $1 <\/s> <s> \. \. \. /g;
 	}
 
-   return $thetext;
+	if ($thetext =~ /, <s> \d+ <\/s> <s>/)
+	{
+		print "Possible wrongly inserted , <s> NUMB </s> . Deleting extra <s>.\n";
+		$thetext =~ s/, <s> (\d+) <\/s> <s>/, $1 <\/s> <s>/g;
+	}
+
+ 	my $matchingSs = &check_matching_s($thetext);
+
+	if ($matchingSs == 1)
+	{
+		print "Entering including/excluding </s>.\n";
+		if ($thetext =~ / <s> ([^\/]+) (\"|\)|\–|\]|:) <s> /)
+		{
+			print "Inserting </s>.\n";
+			$thetext =~ s/ <s> ([^\/]+) ([\:\"\)\]\–]{1,1}) <s> / <s> $1 $2 <\/s> <s> /g;
+			$thetext =~ s/ <\/s> (\W+) <\/s> <s> / <\/s> $1 <s> /g;
+			#Single text problems
+			$thetext =~ s/ <\/s> \[ SCENE : <\/s> <s> / <\/s> <s> \[ SCENE : /;
+			#G1A
+			$thetext =~ s/ <\/s> \( ([^\)]+)\) " / <\/s> <s> \( $1\) <\/s> <s> " /g;
+		}
+		#pg49331
+		$thetext =~ s/ II <\/s> \. \. \. so / II <\/s> <s> \. \. \. so /;
+	}
+
+    return $thetext;
+}
+
+sub check_matching_s
+{
+	my ($document) = @_;
+
+	my @splitdocument = split/ /, $document;
+
+	my $startS = 0;
+	my $endS = 0;
+	my $linenr = -1;
+	my $flag = 0;
+	foreach (@splitdocument)
+	{
+		$linenr++;
+		if (/<s>/)
+		{
+			$startS++;
+			$endS = 0;
+		}
+
+		if (/<\/s>/)
+		{
+			$endS++;
+			$startS = 0;
+		}
+
+		if ($startS > 1 || $endS > 1)
+		{
+			print "Non-matching Ss: $linenr\n";
+			$flag = 1;
+		}
+	}
+	if ($startS > 1 || $endS > 1)
+	{
+		print "Non-matching Ss: $linenr : $splitdocument[$linenr]\n";
+		$flag = 1;
+	}
+
+	return $flag;
 }
