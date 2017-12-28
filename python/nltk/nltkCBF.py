@@ -77,10 +77,18 @@ infile = sys.argv[1]
 file = open(infile, 'r')
 theText = file.read()
 
+print('Tagging ', end="")
+print(infile, end="\n")
+
 theText = str(theText)
 theText = re.sub("</s>", "SETNEND", theText)
 theText = re.sub("<s>", "SETNSTART", theText)
 theText = re.sub("ë", "eø", theText)
+theText = re.sub("ń", "nø", theText)
+theText = re.sub("œ", "æø", theText)
+theText = re.sub("û", "uø", theText)
+theText = re.sub("–", "--", theText)
+theText = re.sub('–', '--', theText)
 
 tokens = nltk.word_tokenize(theText)
 
@@ -140,7 +148,12 @@ for tagg in tags:
     else:
         wpl = word + "\t" + c5 + "\t" + lemma
 
+#Problematic characters and signs
     wpl = re.sub("eø", "ë", wpl)
+    wpl = re.sub("nø", "ń", wpl)
+    wpl = re.sub("æø", "œ", wpl)
+    wpl = re.sub("uø", "û", wpl)
+#    wpl = re.sub("–", "--", wpl)
     new_file.write(wpl)
     new_file.write("\n")
 
