@@ -3,8 +3,8 @@
 use strict;
 use utf8;
 
-my ($basePath) = @ARGV;
-my $resultPath = $basePath;
+my ($basePath, $resultPath) = @ARGV;
+#my $resultPath = $basePath;
 #$resultPath =~ s/test/result/;
 
 opendir(DS, $basePath) or die $!;
@@ -71,7 +71,6 @@ while (my $txt = readdir(DS))
 			$line =~ s/&dash;/–/g;
 			$line =~ s/—/–/g;
 			$line =~ s/–/ – /g;
-#			$line =~ s/ – / __ /g;
 
 			$line =~ s/“/"/g;
 			$line =~ s/”/"/g;
@@ -301,6 +300,8 @@ sub sInsert
 
 #E.g. Paul K . </s> <s> Jones
    $thetext =~ s/([[:upper:]]{1})([[:lower:]]+) ([[:upper:]]{1}) \. <\/s> <s> ([[:upper:]]{1})/$1$2 $3\. $4/g;
+#E.g. M. </s> <s> Winterbottom 
+   $thetext =~ s/ ([[:upper:]]{1,1}) \. <\/s> <s> ([[:upper:]]{1}) /$1\. $2 /g;
 
 #Remove likely errors, e.g. Stupid ! " I said .
 #   local_text = regex.sub(r'\?"</s> <s>I ([[:lower:]])', r'?" I \1', local_text)
@@ -388,6 +389,8 @@ sub sInsert
 		}
 		#pg49331
 		$thetext =~ s/ II <\/s> \. \. \. so / II <\/s> <s> \. \. \. so /;
+		#GraGre3
+		$thetext =~ s/ BOOK THREE <\/s> <s> I <\/s> \. \. \. / BOOK THREE <\/s> <s> I \. \. \. /;
 	}
 
     return $thetext;
