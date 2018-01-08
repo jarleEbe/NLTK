@@ -83,10 +83,25 @@ print(infile, end="\n")
 theText = str(theText)
 theText = re.sub("</s>", "SETNEND", theText)
 theText = re.sub("<s>", "SETNSTART", theText)
+theText = re.sub("&amp;", "&", theText)
+#theText = re.sub("&lt;", "<", theText)
+#theText = re.sub("&gt;", ">", theText)
+
 theText = re.sub("ë", "eø", theText)
 theText = re.sub("ń", "nø", theText)
 theText = re.sub("œ", "æø", theText)
 theText = re.sub("û", "uø", theText)
+
+
+#theText = re.sub("ï", "iæ", theText)
+#theText = re.sub("â", "aø", theText)
+#theText = re.sub("ê", "eæ", theText)
+#theText = re.sub("è", "eå", theText)
+theText = re.sub("à", "aå", theText)
+
+theText = re.sub("ā", "aø", theText)
+theText = re.sub("ī", "iø", theText)
+
 theText = re.sub("–", "--", theText)
 theText = re.sub('–', '--', theText)
 
@@ -133,13 +148,19 @@ for tagg in tags:
     else:
         x = 0
 
-    if (word == '.' and c5 == '.'):
-        lemma = 'full_stop'
+    if (word == '.' and c5 == '.' and lemma == '.'):
+        c5 = 'SETN'
+
+    if (word == '--' and c5 == ':' and lemma == '--'):
+        word = '&#x2013;'
+        c5 = 'SYM'
+        lemma = '&#x2013;'
 
     if (word == "``" and c5 == "``" and lemma == "``" ):
         word = '"'
         c5 = '"'
         lemma = '"'
+    
     wpl = ''
     if (word == 'SETNSTART'):
         wpl = '<s>'
@@ -153,6 +174,12 @@ for tagg in tags:
     wpl = re.sub("nø", "ń", wpl)
     wpl = re.sub("æø", "œ", wpl)
     wpl = re.sub("uø", "û", wpl)
+    wpl = re.sub("aø", "ā", wpl)
+    wpl = re.sub("iø", "ī", wpl)
+    wpl = re.sub("aå", "à", wpl)
+    wpl = re.sub("&", "&amp;", wpl)
+#    wpl = re.sub("<", "&lt;", wpl)
+#    wpl = re.sub(">", "&gt;", wpl)
 #    wpl = re.sub("–", "--", wpl)
     new_file.write(wpl)
     new_file.write("\n")
