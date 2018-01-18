@@ -172,10 +172,9 @@ def add_xml_text(taggeddir, text, headerdir, outdir):
     new_file.write(novel)
     new_file.write("\n")
 
-
-    print(local_file)
-    print(headerf)
-    print(outfile, "\n")
+#    print(local_file)
+#    print(headerf)
+#    print(outfile, "\n")
 
     # open the file for reading
     with open(local_file, 'r') as infile:

@@ -20,6 +20,23 @@ import nltk.tag
 from nltk.corpus import wordnet
 from nltk.stem.wordnet import WordNetLemmatizer
 
+def check_utf8(mytext):
+
+    passed = 1
+    content = mytext.split(" ")
+    for myword in content:
+        try:
+            myword.decode('utf8')
+#            print('Latin2: ', end="")
+#            print(myword, end="\n")
+        except UnicodeDecodeError:
+            print("String not utf-8?: ", end="")
+            print(myword, end="\n")
+            passed = 0
+
+    return passed
+
+
 def populate_lemma_dict():
     
     lemmas = dict()
@@ -31,7 +48,7 @@ def populate_lemma_dict():
 
     return lemmas
 
-    
+
 def read_map_penn_c5(map_file):
     file = open(map_file, 'r')
     the_file = file.read()
@@ -92,7 +109,6 @@ theText = re.sub("ń", "nø", theText)
 theText = re.sub("œ", "æø", theText)
 theText = re.sub("û", "uø", theText)
 
-
 #theText = re.sub("ï", "iæ", theText)
 #theText = re.sub("â", "aø", theText)
 #theText = re.sub("ê", "eæ", theText)
@@ -105,8 +121,11 @@ theText = re.sub("ī", "iø", theText)
 theText = re.sub("–", "--", theText)
 theText = re.sub('–', '--', theText)
 
-tokens = nltk.word_tokenize(theText)
+checked = check_utf8(theText)
+if checked == 0:
+    print("Non utf-8 characters in text", end="\n")
 
+tokens = nltk.word_tokenize(theText)
 tags = nltk.pos_tag(tokens)
 
 the_mapping = dict()
@@ -147,6 +166,12 @@ for tagg in tags:
         c5 = the_mapping[penn]
     else:
         x = 0
+    
+    checked = check_utf8(word)
+    if checked == 0:
+        word = '???'
+        c5 = 'SYM'
+        lemma = '???'
 
     if (word == '.' and c5 == '.' and lemma == '.'):
         c5 = 'SETN'
@@ -155,6 +180,10 @@ for tagg in tags:
         word = '&#x2013;'
         c5 = 'SYM'
         lemma = '&#x2013;'
+
+    if (word == '&' and lemma == '&'):
+        word = '&amp;'
+        lemma = '&amp;'
 
     if (word == "``" and c5 == "``" and lemma == "``" ):
         word = '"'
@@ -177,10 +206,11 @@ for tagg in tags:
     wpl = re.sub("aø", "ā", wpl)
     wpl = re.sub("iø", "ī", wpl)
     wpl = re.sub("aå", "à", wpl)
-    wpl = re.sub("&", "&amp;", wpl)
+#    wpl = re.sub("&", "&amp;", wpl)
 #    wpl = re.sub("<", "&lt;", wpl)
 #    wpl = re.sub(">", "&gt;", wpl)
 #    wpl = re.sub("–", "--", wpl)
+
     new_file.write(wpl)
     new_file.write("\n")
 

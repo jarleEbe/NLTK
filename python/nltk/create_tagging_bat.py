@@ -5,7 +5,7 @@ from __future__ import print_function
 import os, re
 
 rootdir = '.'
-startdir = 'tokenized/'
+startdir = '../../perl/tokenized/'
 
 #filestotag = re.compile('filestotag', flags=re.IGNORECASE)
 #tagged = re.compile('tagged', flags=re.IGNORECASE)
