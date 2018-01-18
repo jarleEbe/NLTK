@@ -12,12 +12,24 @@ opendir(DS, $basePath) or die $!;
 my $numFiles = 0;
 while (my $txt = readdir(DS))
 {
-	if ($txt =~ /\_tokenized.txt$/i)
+	if ($txt =~ /_tokenized\.txt$/i || $txt =~ /_tagged\.txt$/i)
 	{
 		$numFiles++;
 		open(INN, "$basePath$txt");
-        my $thefile = <INN>;
+        my $thefile = '';
+        if ($txt =~ /_tokenized\.txt$/i)
+        {
+            my @content = <INN>;
+            $thefile = join("\n", @content);
+        }
+        elsif ($txt =~ /_tagged\.txt$/i)
+        {
+            my @content = <INN>;
+            $thefile = join("\n", @content); 
+        }
         close(INN);
+        $thefile =~ s/&/&amp;/g;
+        $thefile =~ s/\–/--/g;
         $thefile = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . '<text>' . "\n" . $thefile . "\n" . '</text>';
         print "Validating $basePath$txt in encoding $myencoding... \n";
 

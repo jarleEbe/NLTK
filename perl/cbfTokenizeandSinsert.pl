@@ -298,10 +298,12 @@ sub sInsert
    $thetext =~ s/U \. S \. /U\.S\. /g;
    $thetext =~ s/B \. B \. C \. /B\.B\.C\. /g;
 
+#E.g. P . </s> <s> K . </s> <s> Jones
+   $thetext =~ s/ ([[:upper:]]{1}) \. <\/s> <s> ([[:upper:]]{1}) \. <\/s> <s> ([[:upper:]]{1})/ $1\. $2\. $3/g;
 #E.g. Paul K . </s> <s> Jones
-   $thetext =~ s/([[:upper:]]{1})([[:lower:]]+) ([[:upper:]]{1}) \. <\/s> <s> ([[:upper:]]{1})/$1$2 $3\. $4/g;
+   $thetext =~ s/ ([[:upper:]]{1})([[:lower:]]+) ([[:upper:]]{1}) \. <\/s> <s> ([[:upper:]]{1})/ $1$2 $3\. $4/g;
 #E.g. M. </s> <s> Winterbottom 
-   $thetext =~ s/ ([[:upper:]]{1,1}) \. <\/s> <s> ([[:upper:]]{1}) /$1\. $2 /g;
+   $thetext =~ s/ ([[:upper:]]{1,1}) \. <\/s> <s> ([[:upper:]]{1}) / $1\. $2 /g;
 
 #Remove likely errors, e.g. Stupid ! " I said .
 #   local_text = regex.sub(r'\?"</s> <s>I ([[:lower:]])', r'?" I \1', local_text)
@@ -311,12 +313,12 @@ sub sInsert
 # ? " </s> <s> Elaine said . </s>
 
 #questions  ? " </s> <s> Lucy asked 
-   $thetext =~ s/\? " <\/s> <s> ([[:upper:]]{1})([[:lower:]]+) (said|ask.*|enquire.*|inquire.*|plead.*|queri.*|question.*|murmur.*|amend.*|whisper.*|repli.*)/\? " $1$2 $3/g;
-   $thetext =~ s/\? " <\/s> <s> (Mr\.|Mrs\.|Ms\.|Dr\.|dr\.) ([[:upper:]]{1})([[:lower:]]+) (said|ask.*|enquire.*|inquire.*|plead.*|queri.*|question.*|murmur.*|amend.*|whisper.*|repli.*)/\? " $1 $2$3 $4/g;
+   $thetext =~ s/\? " <\/s> <s> ([[:upper:]]{1})([[:lower:]]+) (said|ask.*|enquire.*|inquire.*|plead.*|queri.*|question.*|murmur.*|amend.*|whisper.*|repli.*)/\? " $1$2 $3 /g;
+   $thetext =~ s/\? " <\/s> <s> (Mr\.|Mrs\.|Ms\.|Dr\.|dr\.) ([[:upper:]]{1})([[:lower:]]+) (said|ask.*|enquire.*|inquire.*|plead.*|queri.*|question.*|murmur.*|amend.*|whisper.*|repli.*)/\? " $1 $2$3 $4 /g;
 
 #commands/statments
-   $thetext =~ s/\! " <\/s> <s> ([[:upper:]]{1})([[:lower:]]+) (said|add.*|allge.*|amend.*|announce.*|answer.*|cri.*|exclaim.*|profess.*|protest.*|repli.*|sniff.*)/\! " $1$2 $3/g;
-   $thetext =~ s/\! " <\/s> <s> (Mr\.|Mrs\.|Ms\.|Dr\.|dr\.) ([[:upper:]]{1})([[:lower:]]+) (said|add.*|allge.*|amend.*|announce.*|answer.*|cri.*|exclaim.*|profess.*|protest.*|repli.*|sniff.*)/\! " $1 $2$3 $4/g;
+   $thetext =~ s/\! " <\/s> <s> ([[:upper:]]{1})([[:lower:]]+) (said|add.*|allge.*|amend.*|announce.*|answer.*|cri.*|exclaim.*|profess.*|protest.*|repli.*|sniff.*)/\! " $1$2 $3 /g;
+   $thetext =~ s/\! " <\/s> <s> (Mr\.|Mrs\.|Ms\.|Dr\.|dr\.) ([[:upper:]]{1})([[:lower:]]+) (said|add.*|allge.*|amend.*|announce.*|answer.*|cri.*|exclaim.*|profess.*|protest.*|repli.*|sniff.*)/\! " $1 $2$3 $4 /g;
 
 	if ($thetext =~ /< \/ s > (\p{Alnum}|"|')/)
 	{
@@ -391,7 +393,13 @@ sub sInsert
 		$thetext =~ s/ II <\/s> \. \. \. so / II <\/s> <s> \. \. \. so /;
 		#GraGre3
 		$thetext =~ s/ BOOK THREE <\/s> <s> I <\/s> \. \. \. / BOOK THREE <\/s> <s> I \. \. \. /;
+		#pg2688
+		$thetext =~ s/ CHAPTER ([IVX]+?) <\/s>T\. X \./ CHAPTER $1 <\/s> <s> T\. X\./g;
+		#pg49331
+		$thetext =~ s/ <s>  ([IVX]+?) <\/s>W\. G \./ <s> $1 <\/s> <s> W\. G\./g;
 	}
+
+	$thetext =~ s/ \s+/ /g;
 
     return $thetext;
 }
