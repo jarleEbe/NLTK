@@ -1,0 +1,46 @@
+VBP	am	VBB	be	the "base forms" of the verb "BE" (except the infinitive), i.e. AM, ARE
+VBP	are	VBB	be	the "base forms" of the verb "BE" (except the infinitive), i.e. AM, ARE
+VBD	was	VBD	be	past form of the verb "BE", i.e. WAS, WERE
+VBD	were	VBD	be	past form of the verb "BE", i.e. WAS, WERE
+VBG	being	VBG	be	-ing form of the verb "BE", i.e. BEING
+VB	be	VBB	be	infinitive of the verb "BE"
+VBN	been	VBN	be	past participle of the verb "BE", i.e. BEEN
+VBZ	is	VBZ	be	-s IS
+VBZ	's	VB	's	-s 'S
+VB	do	VDB	do	base form of the verb "DO" (except the infinitive), i.e.
+VBD	did	VDD	do	past form of the verb "DO", i.e. DID
+VBN	done	VDN	do	past form of the verb "DO", i.e. DID
+VBG	doing	VDG	do	-ing form of the verb "DO", i.e. DOING
+VBP	do	VDB	do	infinitive of the verb "DO"
+VBZ	does	VDZ	do	-s form of the verb "DO", i.e. DOES
+VB	have	VHB	have	base form of the verb "HAVE" (except the infinitive), i.e. HAVE
+VBP	've	VHB	have	base form of the verb "HAVE" (except the infinitive), i.e. HAVE
+VBD	had	VHD	have	past tense form of the verb "HAVE", i.e. HAD, 'D
+VBD	'd	VHD	have	past tense form of the verb "HAVE", i.e. HAD, 'D
+VBG	having	VHG	have	-ing form of the verb "HAVE", i.e. HAVING
+VB	have	VHI	have	infinitive of the verb "HAVE"
+VBD	had	VHN	have	past participle of the verb "HAVE", i.e. HAD
+VBN	had	VHN	have	past participle of the verb "HAVE", i.e. HAD
+VBZ	has	VHZ	have	-s form of the verb "HAVE", i.e. HAS,
+MD	can	VM0	can	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	ca	VM0	can	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	will	VM0	will	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	'll	VM0	will	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	would	VM0	would	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	'd	VM0	'd	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	shall	VM0	shall	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	sha	VM0	shall	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	should	VM0	should	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	might	VM0	might	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	may	VM0	may	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	must	VM0	must	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+MD	could	VM0	could	modal auxiliary verb (e.g. CAN, COULD, WILL, 'LL)
+VB	*	VVB	*	base form of lexical verb (except the infinitive)(e.g. TAKE, LIVE)
+VBD	*	VVD	*	past tense form of lexical verb (e.g. TOOK, LIVED)
+VBP	*	VVB	*	verb 3rd pers sing base form for lexical verbs
+VBG	*	VVG	*	-ing form of lexical verb (e.g. TAKING, LIVING)
+VB	*	VVI	*	infinitive of lexical verb
+VBN	*	VVN	*	past participle form of lex. verb (e.g. TAKEN, LIVED)
+VBZ	*	VVZ	*	-s form of lexical verb (e.g. TAKES, LIVES)
+RB	n't	XX0	not	N't
+RB	not	XX0	not	NOT

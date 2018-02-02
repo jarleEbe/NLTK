@@ -49,6 +49,23 @@ def populate_lemma_dict():
     return lemmas
 
 
+#def read_map_penn_c5(map_file):
+#    file = open(map_file, 'r')
+#    the_file = file.read()
+
+#   map_dict = dict()
+#    content = the_file.split("\n")
+#    for line in content:
+#        line = line.rstrip()
+#        if line:
+#            taggs = line.split("\t")
+#            penn = taggs[0]
+#            c5 = taggs[1]
+#            map_dict[penn] = c5
+
+#    return map_dict
+
+
 def read_map_penn_c5(map_file):
     file = open(map_file, 'r')
     the_file = file.read()
@@ -56,14 +73,45 @@ def read_map_penn_c5(map_file):
     map_dict = dict()
     content = the_file.split("\n")
     for line in content:
-        line = line.strip()
-        taggs = line.split("\t")
-        penn = taggs[0]
-        c5 = taggs[1]
-        map_dict[penn] = c5
+        line = line.rstrip()
+        if line:
+            taggs = line.split("\t")
+            pennpos = taggs[0]
+            theword = taggs[1]
+            clawspos = taggs[2]
+            thelemma = taggs[3]
+#            comment = taggs[4]
+            penn = pennpos + '#' + theword
+            map_dict[penn] = line
 
     return map_dict
-        
+
+
+def map_penn_to_claws(mappingdict, tagg, cword):
+    taggandword = tagg + '#' + cword
+    clemma = ''
+    clawstag = ''
+    if taggandword in mappingdict:
+        row = mappingdict[taggandword]
+        attributes = row.split("\t")
+        clawstag = attributes[2]
+        clemma = attributes[3]
+#        print(taggandword, end="1: ")
+#        print(clawstag, end="2: ")
+#        print(clemma, end="\n")
+    else:
+        otherverb = tagg + '#' + '*'
+        if otherverb in mappingdict:
+            row = mappingdict[otherverb]
+            attributes = row.split("\t")
+            clawstag = attributes[2]
+#            print(taggandword, end="3: ")
+#            print(clawstag, end="4: ")
+#            print(clemma, end="\n")
+
+    return clemma, clawstag
+
+
 def get_wordnet_pos(treebank_tag):
 
     if treebank_tag.startswith('J'):
@@ -129,43 +177,53 @@ tokens = nltk.word_tokenize(theText)
 tags = nltk.pos_tag(tokens)
 
 the_mapping = dict()
-the_mapping = read_map_penn_c5("map_penn_c5.txt")
-lemma_list = dict()
-lemma_list = populate_lemma_dict()
+the_mapping = read_map_penn_c5("map_penn_c5_v3.txt")
+#lemma_list = dict()
+#lemma_list = populate_lemma_dict()
 
 #outfile = "test_tagged.txt"
 outfile = sys.argv[2]
 new_file = open(outfile, 'w')
-
 for tagg in tags:
     word = tagg[0]
-    lemma = ''
-    LEMMA = ''
-
+    lemma = word.lower()
+    c5 = tagg[1]
+ 
+#   LEMMA = ''
     #Special case if word form is BE, DO or HAVE
-    LEMMA = word.upper() #BE, DO or HAVE
+#    LEMMA = word.upper() #BE, DO or HAVE
 
     #Find word's lemma
-    lemma = word.lower()
+#    lemma = word.lower()
     if re.search(r'[a-zA-Z]', lemma):
         wc = get_wordnet_pos(tagg[1])
         if wc != '' and lemma != '':
             lemma = wordnet_lemmatizer.lemmatize(lemma, pos=wc)
     if lemma == "":
-        lemma = tagg[0]
+        lemma = word.lower()
+
+    tlemma, ttagg = map_penn_to_claws(the_mapping, c5, word)
+    if tlemma:
+        lemma = tlemma
+    if ttagg:
+        c5 = ttagg
 
     #Check if PENN pos tag can be mapped to C5
-    penn = tagg[1]
-    c5 = penn
-    if LEMMA == 'BE' or LEMMA == 'DO' or LEMMA == 'HAVE':
-        penn = penn + '#' + LEMMA
-    elif lemma in lemma_list: #lemma == 'be' or lemma == 'do' or lemma == 'have' or lemma == 'of' or lemma == 'not' or lemma == "n't" or lemma == 'when' or lemma == 'although':
-        penn = penn + '#' + lemma
+#    penn = tagg[1]
+#    c5 = penn
+#    if LEMMA == 'BE' or LEMMA == 'DO' or LEMMA == 'HAVE':
+#        penn = penn + '#' + LEMMA
+#    elif lemma in lemma_list: #lemma == 'be' or lemma == 'do' or lemma == 'have' or lemma == 'of' or lemma == 'not' or lemma == "n't" or lemma == 'when' or lemma == 'although':
+#        penn = penn + '#' + lemma
 
-    if penn in the_mapping:
-        c5 = the_mapping[penn]
-    else:
-        x = 0
+#    if penn in the_mapping:
+#        c5 = the_mapping[penn]
+#        print(word, end=": ")
+#        print(penn, end=": ")
+#        print(lemma, end=": ")
+#        print(c5, end="\n")
+#    else:
+#        x = 0
     
     checked = check_utf8(word)
     if checked == 0:
@@ -189,6 +247,16 @@ for tagg in tags:
         word = '"'
         c5 = '"'
         lemma = '"'
+
+#Why?
+    if (word == "nephew" and c5 == "``" and lemma == "nephew" ):
+        c5 = 'NN'
+
+    if (word == "``" or c5 == "``" or lemma == "``" ):
+        print("Why still`` in tagging (word, pos, lemma): ", end="")
+        print(word, end="\t")
+        print(c5, end="\t")
+        print(lemma, end="\n")
     
     wpl = ''
     if (word == 'SETNSTART'):
@@ -210,6 +278,37 @@ for tagg in tags:
 #    wpl = re.sub("<", "&lt;", wpl)
 #    wpl = re.sub(">", "&gt;", wpl)
 #    wpl = re.sub("–", "--", wpl)
+
+#Special cases: NB! Only this tagger
+    if (word == "Can't" and c5 == "NNP" and lemma == "can't"):
+        wpl = "Ca" + "\t" + "VM0" + "\t" + "can"
+        new_file.write(wpl)
+        new_file.write("\n")
+        wpl = "n't" + "\t" + "XX0" + "\t" + "not"
+
+    if (word == "can't" and c5 == "VVB" and lemma == "can't"):
+        wpl = "ca" + "\t" + "VM0" + "\t" + "can"
+        new_file.write(wpl)
+        new_file.write("\n")
+        wpl = "n't" + "\t" + "XX0" + "\t" + "not"
+
+    if (word == "I'd" and c5 == "NNP" and lemma == "i'd"):
+        wpl = "I" + "\t" + "PRP" + "\t" + "i"
+        new_file.write(wpl)
+        new_file.write("\n")
+        wpl = "'d" + "\t" + "VM0" + "\t" + "'d"
+
+    if (word == "D'you" and lemma == "d'you"):
+        wpl = "D'" + "\t" + "VDB" + "\t" + "do"
+        new_file.write(wpl)
+        new_file.write("\n")
+        wpl = "you" + "\t" + "PRP" + "\t" + "you"
+
+    if (word == "d'you" and lemma == "d'you"):
+        wpl = "d'" + "\t" + "VDB" + "\t" + "do"
+        new_file.write(wpl)
+        new_file.write("\n")
+        wpl = "you" + "\t" + "PRP" + "\t" + "you"
 
     new_file.write(wpl)
     new_file.write("\n")
