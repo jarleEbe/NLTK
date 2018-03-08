@@ -198,6 +198,11 @@ while (my $txt = readdir(DS))
 #				print OUT "$token ";
 			}
 		}
+        $thewholetext =~ s/ '([A-Za-z]{1,4}) /'$1 /g; #For the benefit of the tagger
+        $thewholetext =~ s/ 'd 've /'d've /g; #For the benefit of the tagger
+        $thewholetext =~ s/ (CA|ca|Ca) n't / $1n't /g; #For the benefit of the tagger
+        $thewholetext =~ s/ (SHA|sha|Sha) n't / $1n't /g; #For the benefit of the tagger
+        $thewholetext =~ s/ (MUS|mus|Mus) n't / $1n't /g; #For the benefit of the tagger
         $thewholetext = &sInsert($thewholetext);
         print OUT $thewholetext;
         close(OUT);
@@ -234,6 +239,11 @@ sub sInsert
 
 	$thetext =~ s/(\.|\?|\!) " " '([T]{1})/$1 " <\/s> <s> " '$2/g;
 	$thetext =~ s/(\.|\?|\!) " '([T]{1})/$1 " <\/s> <s> '$2/g;
+
+	$thetext =~ s/(\.|\?|\!) "'(Tis) /$1 " <\/s> <s> '$2 /g;
+	$thetext =~ s/(\.|\?|\!)'(Tis) /$1 <\/s> <s> '$2 /g;
+	
+	$thetext =~ s/(\.|\?|\!)'(Read) /$1 <\/s> <s> " $2 /g;
 
 	$thetext =~ s/(\.|\?|\!) " " ([0-9]{1})/$1 " <\/s> <s> " $2/g;
 
@@ -397,6 +407,8 @@ sub sInsert
 		$thetext =~ s/ CHAPTER ([IVX]+?) <\/s>T\. X \./ CHAPTER $1 <\/s> <s> T\. X\./g;
 		#pg49331
 		$thetext =~ s/ <s>  ([IVX]+?) <\/s>W\. G \./ <s> $1 <\/s> <s> W\. G\./g;
+		#fp20110701
+		$thetext =~ s/<\/s> \( 1 \) / <\/s> <s> \( 1 \)/g;
 	}
 
 	$thetext =~ s/ \s+/ /g;
