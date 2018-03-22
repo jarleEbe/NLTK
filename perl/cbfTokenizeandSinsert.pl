@@ -240,6 +240,7 @@ sub sInsert
 	$thetext =~ s/(\.|\?|\!) " " '([T]{1})/$1 " <\/s> <s> " '$2/g;
 	$thetext =~ s/(\.|\?|\!) " '([T]{1})/$1 " <\/s> <s> '$2/g;
 
+	$thetext =~ s/(\.|\?|\!) " "'(Tis)/$1 " <\/s> <s> " '$2/g;
 	$thetext =~ s/(\.|\?|\!) "'(Tis) /$1 " <\/s> <s> '$2 /g;
 	$thetext =~ s/(\.|\?|\!)'(Tis) /$1 <\/s> <s> '$2 /g;
 	
@@ -383,6 +384,11 @@ sub sInsert
 		print "Possible wrongly inserted , <s> NUMB </s> . Deleting extra <s>.\n";
 		$thetext =~ s/, <s> (\d+) <\/s> <s>/, $1 <\/s> <s>/g;
 	}
+
+#Some oddities
+	$thetext =~ s/dinin " - room/dinin'-room/g;
+	$thetext =~ s/drawin " - room/drawin'-room/g;
+	$thetext =~ s/livin " - room/livin'-room/g;
 
  	my $matchingSs = &check_matching_s($thetext);
 

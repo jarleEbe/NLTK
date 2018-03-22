@@ -94,13 +94,51 @@ while (my $txt = readdir(DS))
                     print "Changed pos and lemma: $temp\n";
                     push(@newcontent, $temp);
                 }
+                elsif($lemma eq '<unknown>' && $word =~ /(.+)in$/)
+                {
+                    my $testifin = &ining($word);
+                    if ($testifin eq '')
+                    {
+                        my $theoddword = &moreoddwords($word);
+                        if ($theoddword eq '')
+                        {
+                            my $newlemma = $word;
+                            print UNKNOWN "$line\t$txt\n";
+                            $newlemma = lc($newlemma);
+                            my $temp = "$word\t$pos\t$newlemma";
+                            push(@newcontent, $temp);
+                        }
+                        else
+                        {
+                            print "Fixing in(g) extra: $theoddword\n";
+                            push(@newcontent, $theoddword);
+                        }
+                    }
+                    else
+                    {
+                        my $newlemma = $testifin;
+                        my $newpos = 'VBG';
+                        my $temp = "$word\t$newpos\t$newlemma";
+                        print "Fixing in(g): $temp\n";
+                        push(@newcontent, $temp);
+                    }
+                }
                 elsif ($lemma eq '<unknown>')
                 {
-                    my $newlemma = $word;
-                    print UNKNOWN "$line\t$txt\n";
-                    $newlemma = lc($newlemma);
-                    my $temp = "$word\t$pos\t$newlemma";
-                    push(@newcontent, $temp);
+                    my $oddword = &oddwords($word);
+                    if ($oddword eq '')
+                    {
+                        my $newlemma = $word;
+                        print UNKNOWN "$line\t$txt\n";
+                        $newlemma = lc($newlemma);
+                        my $temp = "$word\t$pos\t$newlemma";
+                        push(@newcontent, $temp);
+                    }
+                    else
+                    {
+                        print "Fixing odd words: $oddword\n";
+                        push(@newcontent, $oddword);
+                    }
                 }
                 else
                 {
@@ -171,3 +209,205 @@ sub possibleNnumber
 
     return $anumber;
 }
+
+sub ining
+{
+
+    my $ingword = shift(@_);
+
+    my $returnvalue = '';
+
+    my %hasj = (
+	    'accordin' => 'accord',
+	    'askin' => 'ask',
+	    'avin' => 'have',
+	    'bein' => 'be',
+	    'bleedin' => 'bleed',
+	    'blinkin' => 'blink',
+	    'bloomin' => 'bloom',
+	    'carryin' => 'carry',
+	    'comin' => 'come',
+	    'doin' => 'do',
+	    'drinkin' => 'drink',
+	    'drivin' => 'drive',
+	    'eatin' => 'eat',
+	    'expectin' => 'expect',
+	    'feelin' => 'feel',
+	    'findin' => 'find',
+	    'fuckin' => 'fuck',
+	    'gettin' => 'get',
+	    'givin' => 'give',
+	    'goin' => 'og',
+	    'hangin' => 'hang',
+	    'havin' => 'have',
+	    'hearin' => 'hear',
+	    'holdin' => 'hold',
+	    'huntin' => 'hunt',
+	    'keepin' => 'keep',
+	    'laughin' => 'laugh',
+	    'layin' => 'lay',
+	    'leavin' => 'leave',
+	    'lettin' => 'let',
+	    'livin' => 'live',
+	    'losin' => 'lose',
+	    'lyin' => 'lie',
+	    'makin' => 'make',
+	    'marryin' => 'marry',
+	    'payin' => 'pay',
+	    'playin' => 'play',
+	    'puttin' => 'put',
+	    'readin' => 'read',
+	    'runnin' => 'run',
+	    'sayin' => 'say',
+	    'seein' => 'see',
+	    'settin' => 'set',
+	    'shootin' => 'shoot',
+	    'sittin' => 'sit',
+	    'sleepin' => 'sleep',
+	    'speakin' => 'speak',
+	    'starin' => 'stare',
+	    'stickin' => 'stick',
+	    'talkin' => 'talk',
+	    'tellin' => 'tell',
+	    'thinkin' => 'think',
+	    'tryin' => 'try',
+	    'turnin' => 'turn',
+	    'waitin' => 'wait',
+	    'wantin' => 'want',
+	    'wastin' => 'waste',
+	    'watchin' => 'watch',
+	    'wearin' => 'wear',
+	    'wonderin' => 'wonder',
+	    'worryin' => 'worry',
+		'amazin' => 'amaze',
+		'arguin' => 'argue',
+		'beggin' => 'beg',
+		'beginnin' => 'begin',
+		'blowin' => 'blow',
+		'boilin' => 'boil',
+		'breathin' => 'breathe',
+		'bringin' => 'bring',
+		'buildin' => 'build',
+		'burnin' => 'burn',
+		'bustin' => 'bust',
+		'callin' => 'call',
+		'cookin' => 'cook',
+		'crawlin' => 'crawl',
+		'cryin' => 'cry',
+		'cuttin' => 'cut',
+		'dancin' => 'dance',
+		'denyin' => 'deny',
+		'diggin' => 'dig',
+		'dinin' => 'dine',
+		'dreamin' => 'dream',
+		'dressin' => 'dress',
+		'dyin' => 'die',
+		'fallin' => 'fall',
+		'fightin' => 'fight',
+		'fishin' => 'fish',
+		'fixin' => 'fix',
+		'flyin' => 'fly',
+		'grinnin' => 'grin',
+		'growin' => 'grow',
+		'helpin' => 'help',
+		'hidin' => 'hide',
+		'hittin' => 'hit',
+		'hopin' => 'hope',
+		'interferin' => 'interfer',
+		'killin' => 'kill',
+		'kissin' => 'kiss',
+		'knockin' => 'knock',
+		'knowin' => 'know',
+		'listenin' => 'listen',
+		'meanin' => 'mean',
+		'meetin' => 'meet',
+		'missin' => 'miss',
+		'movin' => 'move',
+		'muckin' => 'muck',
+		'openin' => 'open',
+		'packin' => 'pack',
+		'passin' => 'pass',
+		'pokin' => 'poke',
+		'pretendin' => 'pretend',
+		'pullin' => 'pull',
+		'ridin' => 'ride',
+		'ringin' => 'ring',
+		'sellin' => 'sell',
+		'sendin' => 'send',
+		'singin' => 'sing',
+		'smokin' => 'smoke',
+		'spendin' => 'spend',
+		'startin' => 'start',
+		'starvin' => 'starve',
+		'stayin' => 'stay',
+		'stoppin' => 'stop',
+		'sufferin' => 'suffer',
+		'supposin' => 'suppose',
+		'swearin' => 'swear',
+		'tearin' => 'tear',
+		'travellin' => 'travel',
+		'usin' => 'use',
+		'visitin' => 'visit',
+		'wanderin' => 'wander',
+		'warnin' => 'warn',
+		'weddin' => 'web',
+		'wishin' => 'wish',
+	    'writin' => 'write');
+
+    if (exists($hasj{$ingword}))
+    {
+        $returnvalue = $hasj{$ingword};
+    }
+
+    return $returnvalue;
+}
+
+sub oddwords
+{
+    my $localword = shift(@_);
+
+    my $returnvalue = '';
+
+    my %hasj = (
+	    'aving' => "aving\tVBG\thave",
+	    'couldna' => "couldna\tMD\tcould",
+	    'usband' => "usband\tNN\thusband");
+
+    if (exists($hasj{$localword}))
+    {
+        $returnvalue = $hasj{$localword};
+    }
+
+    return $returnvalue;
+}
+
+sub moreoddwords
+{
+    my $localword = shift(@_);
+
+    my $returnvalue = '';
+
+    my %hasj = (
+	    'anythin' => "anythin\tNN\tanything",
+	    'somethin' => "somethin\tNN\tsomething",
+	    'nothin' => "nothin\tNN\tnothing",
+	    'nuffin' => "nuffin\tNN\tnothing",
+	    'everythin' => "everythin\tNN\teverything",
+	    'evenin' => "evenin\tNN\tevening",
+	    'shillin' => "shillin\tNN\tshilling",
+	    'darlin' => "darlin\tNN\tdarling",
+        'interestin' => "interestin\tJJ\tinteresting",
+        'willin' => "willin\tJJ\twilling",
+        'surprisin' => "surprisin\tJJ\tsurprise",
+        'hein' => "hein\tIN\they",
+	    'mornin' => "mornin\tNN\tmorning");
+
+    if (exists($hasj{$localword}))
+    {
+        $returnvalue = $hasj{$localword};
+    }
+
+    return $returnvalue;
+}
+
+
